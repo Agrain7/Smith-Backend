@@ -1,6 +1,6 @@
 // backend/routers/auth.js
 const express = require('express');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/User'); // 경로 주의: backend/routers/auth.js에서 models 폴더는 ../models
