@@ -1,11 +1,13 @@
 // backend/routers/auth.js
 const express = require('express');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs'); // bcryptjs 사용
 const jwt = require('jsonwebtoken');
 const router = express.Router();
-const User = require('../models/User'); // 경로 주의: backend/routers/auth.js에서 models 폴더는 ../models
+const User = require('../models/User');
+// JWT 인증 미들웨어
+const authMiddleware = require('../middleware/authMiddleware');
 
-// 로그인 API
+// 로그인 API (POST /api/login)
 router.post('/login', async (req, res) => {
   console.log('로그인 요청 받음:', req.body);
   const { username, password } = req.body;
@@ -27,7 +29,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: '아이디 또는 비밀번호가 올바르지 않습니다.' });
     }
 
-    // JWT 토큰 생성
+    // JWT 토큰 생성 (payload에 username 포함)
     const token = jwt.sign(
       { username: user.username },
       process.env.JWT_SECRET || 'your_jwt_secret',
@@ -41,7 +43,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// 회원가입 API
+// 회원가입 API (POST /api/signup)
 router.post('/signup', async (req, res) => {
   console.log('Signup 요청 받음');
   const { username, password, name, phone } = req.body;
@@ -74,5 +76,9 @@ router.post('/signup', async (req, res) => {
   }
 });
 
+// 보호된 회원 전용 API 예시 (GET /api/profile)
+router.get('/profile', authMiddleware, (req, res) => {
+  res.json({ message: '회원 전용 정보입니다.', user: req.user });
+});
 
 module.exports = router;
