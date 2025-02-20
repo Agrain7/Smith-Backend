@@ -5,6 +5,7 @@ const cors = require('cors');
 const mongoose = require('./db');  // MongoDB 연결
 const authRouter = require('./routers/auth');
 const usersRouter = require('./routers/users'); // 회원 목록 반환 라우터
+const estimateRequestRouter = require('./routers/estimateRequest');
 
 const app = express();
 app.use(cors());
@@ -13,6 +14,7 @@ app.use(express.json());
 // auth 라우터와 users 라우터를 /api 경로에 마운트
 app.use('/api', authRouter);
 app.use('/api', usersRouter);
+app.use('/api', estimateRequestRouter);
 
 // 기본 테스트 라우트
 app.get('/', (req, res) => {

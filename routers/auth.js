@@ -31,7 +31,7 @@ router.post('/login', async (req, res) => {
 
     // JWT 토큰 생성 (payload에 username 포함)
     const token = jwt.sign(
-      { username: user.username, isAdmin: user.isAdmin },
+      { username: user.username, name: user.name, phone: user.phone, isAdmin: user.isAdmin },
       process.env.JWT_SECRET || 'mySuperSecretKey123!',
       { expiresIn: '1h' }
     );
