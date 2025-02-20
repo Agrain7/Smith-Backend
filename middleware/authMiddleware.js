@@ -6,7 +6,7 @@ function authMiddleware(req, res, next) {
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.split(' ')[1];
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mySuperSecretKey123!');
       req.user = decoded; // 예: { username: 'purplekir', iat: ..., exp: ... }
       next();
     } catch (error) {
