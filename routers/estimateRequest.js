@@ -1,21 +1,45 @@
 // backend/routers/estimateRequest.js
 const express = require('express');
 const router = express.Router();
+const EstimateRequest = require('../models/EstimateRequest'); // 새 모델 import
 
 // POST /api/estimate-request 엔드포인트
 router.post('/estimate-request', async (req, res) => {
   try {
-    // 클라이언트로부터 받은 견적 요청 데이터
-    const estimateData = req.body;
-    console.log("견적 요청 데이터:", estimateData);
+    // 클라이언트에서 전송된 견적 요청 데이터
+    const {
+      username,
+      name,
+      phone,
+      email,
+      projectName,
+      fileContent,
+      fileName
+    } = req.body;
 
-    // 여기에 데이터베이스 저장 등의 로직을 추가할 수 있습니다.
-    // 예를 들어, 새로운 EstimateRequest 모델을 만들어 저장하는 코드 등
+    // 데이터 유효성 검사 (필요한 경우)
+    if (!username || !name || !phone || !email || !projectName || !fileContent || !fileName) {
+      return res.status(400).json({ success: false, message: '모든 필드를 입력해주세요.' });
+    }
 
-    res.json({ success: true, message: "견적 요청이 제출되었습니다." });
+    // 새로운 견적 요청 생성 및 DB에 저장
+    const newEstimateRequest = new EstimateRequest({
+      username,
+      name,
+      phone,
+      email,
+      projectName,
+      fileContent,
+      fileName
+    });
+
+    await newEstimateRequest.save();
+
+    console.log("견적 요청 데이터 저장됨:", newEstimateRequest);
+    res.json({ success: true, message: '견적 요청이 제출되었습니다.' });
   } catch (err) {
     console.error("견적 요청 처리 오류:", err);
-    res.status(500).json({ success: false, message: "서버 오류 발생", error: err.message });
+    res.status(500).json({ success: false, message: '서버 오류 발생', error: err.message });
   }
 });
 
