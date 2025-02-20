@@ -2,15 +2,17 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('./db');  // db.js에서 MongoDB 연결 (구현되어 있다고 가정)
+const mongoose = require('./db');  
 const authRouter = require('./routers/auth');
+const usersRouter = require('./routers/users'); // 추가된 users 라우터
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// auth 라우터를 /api 경로에 마운트
+// auth 라우터와 users 라우터를 /api 경로에 마운트
 app.use('/api', authRouter);
+app.use('/api', usersRouter);
 
 // 기본 테스트 라우트
 app.get('/', (req, res) => {
