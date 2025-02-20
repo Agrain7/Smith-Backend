@@ -2,9 +2,9 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('./db');  
+const mongoose = require('./db');  // MongoDB 연결
 const authRouter = require('./routers/auth');
-const usersRouter = require('./routers/users'); // 추가된 users 라우터
+const usersRouter = require('./routers/users'); // 회원 목록 반환 라우터
 
 const app = express();
 app.use(cors());
