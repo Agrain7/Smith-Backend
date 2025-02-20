@@ -32,7 +32,7 @@ router.post('/login', async (req, res) => {
     // JWT 토큰 생성 (payload에 username 포함)
     const token = jwt.sign(
       { username: user.username, isAdmin: user.isAdmin },
-      process.env.JWT_SECRET || 'your_jwt_secret',
+      process.env.JWT_SECRET || 'mySuperSecretKey123!',
       { expiresIn: '1h' }
     );
     console.log('로그인 성공, 토큰 생성됨');
