@@ -5,13 +5,13 @@ const cors = require('cors');
 const mongoose = require('./db');
 const authRouter = require('./routers/auth');
 const usersRouter = require('./routers/users');
-const estimateRequestRouter = require('./routers/estimateRequest'); // 추가된 라우터
+const estimateRequestRouter = require('./routers/estimateRequest'); // 추가
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 라우터 마운트
+// 각 라우터를 /api 경로 하위에 마운트
 app.use('/api', authRouter);
 app.use('/api', usersRouter);
 app.use('/api', estimateRequestRouter);
