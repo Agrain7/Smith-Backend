@@ -6,7 +6,6 @@ const EstimateRequest = require('../models/EstimateRequest');
 // POST /api/estimate-request : 견적 요청 데이터 저장
 router.post('/estimate-request', async (req, res) => {
   try {
-    // 부재종류(productType) 추가
     const { username, name, phone, email, projectName, productType, fileUrl, fileName } = req.body;
     if (!username || !name || !phone || !email || !projectName || !productType || !fileUrl || !fileName) {
       return res.status(400).json({ success: false, message: '모든 필드를 입력해주세요.' });
@@ -17,7 +16,7 @@ router.post('/estimate-request', async (req, res) => {
       phone,
       email,
       projectName,
-      productType,
+      productType,  // 추가된 필드
       fileUrl,
       fileName
     });
@@ -41,6 +40,7 @@ router.get('/estimate-request', async (req, res) => {
   }
 });
 
+// PUT /api/estimate-request/:id/complete : 견적 요청을 완료 상태로 업데이트
 router.put('/estimate-request/:id/complete', async (req, res) => {
   try {
     const estimateId = req.params.id;
@@ -59,6 +59,7 @@ router.put('/estimate-request/:id/complete', async (req, res) => {
   }
 });
 
+// DELETE /api/estimate-request/:id : 견적 요청 삭제
 router.delete('/estimate-request/:id', async (req, res) => {
   try {
     const estimateId = req.params.id;
