@@ -26,6 +26,12 @@ app.get('/', (req, res) => {
   res.send('Hello from Express backend with MongoDB!');
 });
 
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+  console.log('uploads 폴더가 생성되었습니다.');
+}
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
