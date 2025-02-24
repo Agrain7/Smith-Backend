@@ -6,18 +6,21 @@ const router = express.Router();
 
 // 파일 저장 위치 및 파일명 설정
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    // 파일명을 정규화하고 안전한 문자만 남기도록 처리
-    const safeName = file.originalname
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, "") // 악센트 제거
-      .replace(/[^a-zA-Z0-9.\-_]/g, ""); // 알파벳, 숫자, 점, 대시, 밑줄만 허용
-    cb(null, Date.now() + '-' + safeName);
-  }
-});
+    destination: function (req, file, cb) {
+      cb(null, 'uploads/'); // uploads 폴더에 저장
+    },
+    filename: function (req, file, cb) {
+      // 파일명이 깨지는 문제를 방지하기 위해 인코딩 변환을 시도합니다.
+      let originalName = file.originalname;
+      try {
+        // 만약 originalName이 latin1로 인코딩된 경우 UTF-8로 변환
+        originalName = Buffer.from(originalName, 'latin1').toString('utf8');
+      } catch (error) {
+        console.error("파일명 인코딩 변환 오류:", error);
+      }
+      cb(null, Date.now() + '-' + originalName);
+    }
+  });
 
 // 모든 파일 업로드 허용: fileFilter 옵션을 제거합니다.
 const upload = multer({ storage: storage });

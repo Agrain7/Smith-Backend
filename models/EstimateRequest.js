@@ -8,7 +8,8 @@ const estimateRequestSchema = new mongoose.Schema({
   email: { type: String, required: true },
   projectName: { type: String, required: true },
   fileName: { type: String, required: true },
-  fileUrl: { type: String, required: true }, // 업로드된 파일의 URL
+  fileUrl: { type: String, required: true },
+  completed: { type: Boolean, default: false },  // 추가: 완료 여부
   createdAt: { type: Date, default: Date.now }
 });
 
