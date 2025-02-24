@@ -7,6 +7,8 @@ const authRouter = require('./routers/auth');
 const usersRouter = require('./routers/users');
 const estimateRequestRouter = require('./routers/estimateRequest');
 const uploadRouter = require('./routers/upload');  // 추가
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 app.use(cors());
