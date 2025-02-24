@@ -5,16 +5,20 @@ const cors = require('cors');
 const mongoose = require('./db');
 const authRouter = require('./routers/auth');
 const usersRouter = require('./routers/users');
-const estimateRequestRouter = require('./routers/estimateRequest'); // 추가
+const estimateRequestRouter = require('./routers/estimateRequest');
+const uploadRouter = require('./routers/upload');  // 추가
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 각 라우터를 /api 경로 하위에 마운트
+// 정적 파일 서비스: uploads 폴더를 외부에서 접근 가능하도록 설정
+app.use('/uploads', express.static('uploads'));
+
 app.use('/api', authRouter);
 app.use('/api', usersRouter);
 app.use('/api', estimateRequestRouter);
+app.use('/api', uploadRouter); // 업로드 라우터 마운트
 
 app.get('/', (req, res) => {
   res.send('Hello from Express backend with MongoDB!');
