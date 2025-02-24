@@ -6,8 +6,9 @@ const EstimateRequest = require('../models/EstimateRequest');
 // POST /api/estimate-request : 견적 요청 데이터 저장
 router.post('/estimate-request', async (req, res) => {
   try {
-    const { username, name, phone, email, projectName, fileUrl, fileName } = req.body;
-    if (!username || !name || !phone || !email || !projectName || !fileUrl || !fileName) {
+    // 부재종류(productType) 추가
+    const { username, name, phone, email, projectName, productType, fileUrl, fileName } = req.body;
+    if (!username || !name || !phone || !email || !projectName || !productType || !fileUrl || !fileName) {
       return res.status(400).json({ success: false, message: '모든 필드를 입력해주세요.' });
     }
     const newEstimateRequest = new EstimateRequest({
@@ -16,6 +17,7 @@ router.post('/estimate-request', async (req, res) => {
       phone,
       email,
       projectName,
+      productType,
       fileUrl,
       fileName
     });
