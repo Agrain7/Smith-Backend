@@ -7,8 +7,8 @@ const estimateRequestSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   email: { type: String, required: true },
   projectName: { type: String, required: true },
-  fileContent: { type: String, required: true },
   fileName: { type: String, required: true },
+  fileUrl: { type: String, required: true }, // 업로드된 파일의 URL 저장 (예: S3, 또는 서버의 static 경로)
   createdAt: { type: Date, default: Date.now }
 });
 
