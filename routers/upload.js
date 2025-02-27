@@ -28,7 +28,6 @@ router.post('/upload-estimate', upload.single('estimateFile'), (req, res) => {
     Bucket: process.env.AWS_S3_BUCKET,  // .env 파일에 설정 (예: 'my-s3-bucket')
     Key: Date.now() + '-' + req.file.originalname, // 파일 이름
     Body: req.file.buffer,
-    ACL: 'public-read',  // 업로드 후 파일에 공개 접근 권한 (필요에 따라 조정)
     ContentType: req.file.mimetype,
   };
 
