@@ -1,0 +1,10 @@
+# Node.js 관련
+node_modules/
+npm-debug.log
+
+# Vue.js 빌드 산출물 (예: Vite 또는 Vue CLI의 결과물)
+dist/
+
+# 기타 불필요 파일
+.DS_Store
+.env
