@@ -7,4 +7,3 @@ dist/
 
 # 기타 불필요 파일
 .DS_Store
-.env
