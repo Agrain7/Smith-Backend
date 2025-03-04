@@ -2,6 +2,10 @@
 const express = require('express');
 const router = express.Router();
 const EstimateRequest = require('../models/EstimateRequest');
+const AWS = require('aws-sdk');
+
+// AWS S3 설정 (이미 환경 변수로 설정되어 있다고 가정)
+const s3 = new AWS.S3();
 
 // POST /api/estimate-request : 견적 요청 데이터 저장
 router.post('/estimate-request', async (req, res) => {
@@ -63,24 +67,25 @@ router.put('/estimate-request/:id/complete', async (req, res) => {
 router.delete('/estimate-request/:id', async (req, res) => {
   try {
     const estimateId = req.params.id;
-    // 삭제할 견적 요청을 먼저 조회합니다.
+    // 삭제할 견적 요청을 조회합니다.
     const estimate = await EstimateRequest.findById(estimateId);
     if (!estimate) {
       return res.status(404).json({ success: false, message: "견적 요청을 찾을 수 없습니다." });
     }
 
-    // S3에서 파일 삭제 (파일 Key는 fileUrl의 마지막 부분)
+    // S3에서 파일 삭제 처리
     const fileUrl = estimate.fileUrl;
+    // 파일 Key는 fileUrl의 마지막 부분(인코딩된 상태)입니다.
     const fileKey = fileUrl.split('/').pop();
     const s3Params = {
       Bucket: process.env.AWS_S3_BUCKET,
-      Key: fileKey
+      Key: fileKey,
     };
 
-    // Promise를 사용하여 S3 파일 삭제
+    // Promise를 사용하여 S3 파일 삭제. 실패해도 계속 진행합니다.
     await s3.deleteObject(s3Params).promise().catch(err => {
       console.error("S3 파일 삭제 오류:", err);
-      // S3 파일 삭제에 실패하더라도 로그만 남기고 계속 진행할 수 있도록 처리
+      // S3 삭제 실패 시, 로그만 남기고 계속 진행
     });
 
     // DB에서 견적 요청 삭제
@@ -94,6 +99,5 @@ router.delete('/estimate-request/:id', async (req, res) => {
     res.status(500).json({ success: false, message: "서버 오류 발생", error: err.message });
   }
 });
-
 
 module.exports = router;
