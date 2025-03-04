@@ -69,20 +69,18 @@ router.delete('/estimate-request/:id', async (req, res) => {
       return res.status(404).json({ success: false, message: "견적 요청을 찾을 수 없습니다." });
     }
 
-    // S3에서 파일 삭제 (파일 Key는 fileUrl의 마지막 부분, 인코딩된 상태여야 합니다)
+    // S3에서 파일 삭제 (파일 Key는 fileUrl의 마지막 부분)
     const fileUrl = estimate.fileUrl;
     const fileKey = fileUrl.split('/').pop();
     const s3Params = {
       Bucket: process.env.AWS_S3_BUCKET,
       Key: fileKey
     };
-    s3.deleteObject(s3Params, (err, data) => {
-      if (err) {
-        console.error("S3 파일 삭제 오류:", err);
-        // S3 삭제에 실패해도 계속 진행할지 결정(여기서는 로그만 남기고 계속 진행)
-      } else {
-        console.log("S3 파일 삭제 성공:", data);
-      }
+
+    // Promise를 사용하여 S3 파일 삭제
+    await s3.deleteObject(s3Params).promise().catch(err => {
+      console.error("S3 파일 삭제 오류:", err);
+      // S3 파일 삭제에 실패하더라도 로그만 남기고 계속 진행할 수 있도록 처리
     });
 
     // DB에서 견적 요청 삭제
