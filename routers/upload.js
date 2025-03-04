@@ -1,9 +1,8 @@
-// backend/routers/upload.js
 const express = require('express');
 const multer = require('multer');
 const AWS = require('aws-sdk');
-const path = require('path');
 const router = express.Router();
+const path = require('path');
 
 // AWS S3 설정 (환경 변수나 config 파일로 관리)
 AWS.config.update({
@@ -23,21 +22,23 @@ router.post('/upload-estimate', upload.single('estimateFile'), (req, res) => {
     return res.status(400).json({ success: false, message: '파일 업로드에 실패했습니다.' });
   }
 
-  // S3 업로드 옵션
+  // 파일명을 인코딩하여 안전하게 처리 (한글 등의 문자 문제 방지)
+  const safeFileName = encodeURIComponent(req.file.originalname);
+
   const params = {
-    Bucket: process.env.AWS_S3_BUCKET,  // .env 파일에 설정 (예: 'my-s3-bucket')
-    Key: Date.now() + '-' + req.file.originalname, // 파일 이름
+    Bucket: process.env.AWS_S3_BUCKET,  // 예: 'smithappbucket'
+    Key: `${Date.now()}-${safeFileName}`, // 인코딩된 파일명 포함
     Body: req.file.buffer,
+    // ACL 옵션 제거 (버킷의 Block Public Access 정책에 따라)
     ContentType: req.file.mimetype,
   };
 
-  // S3에 업로드
   s3.upload(params, (err, data) => {
     if (err) {
       console.error("S3 업로드 오류:", err);
-      return res.status(500).json({ success: false, message: '파일 업로드 실패', error: err });
+      return res.status(500).json({ success: false, message: '파일 업로드 실패', error: err.message });
     }
-    // 업로드된 파일의 URL
+    console.log("파일 업로드 성공:", data);
     res.json({ success: true, message: '파일 업로드 성공', fileUrl: data.Location, fileName: req.file.originalname });
   });
 });
