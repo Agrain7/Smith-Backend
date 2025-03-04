@@ -59,19 +59,43 @@ router.put('/estimate-request/:id/complete', async (req, res) => {
   }
 });
 
-// DELETE /api/estimate-request/:id : 견적 요청 삭제
+// DELETE /api/estimate-request/:id : 견적 요청 삭제 (DB와 S3 파일 모두 삭제)
 router.delete('/estimate-request/:id', async (req, res) => {
   try {
     const estimateId = req.params.id;
+    // 삭제할 견적 요청을 먼저 조회합니다.
+    const estimate = await EstimateRequest.findById(estimateId);
+    if (!estimate) {
+      return res.status(404).json({ success: false, message: "견적 요청을 찾을 수 없습니다." });
+    }
+
+    // S3에서 파일 삭제 (파일 Key는 fileUrl의 마지막 부분, 인코딩된 상태여야 합니다)
+    const fileUrl = estimate.fileUrl;
+    const fileKey = fileUrl.split('/').pop();
+    const s3Params = {
+      Bucket: process.env.AWS_S3_BUCKET,
+      Key: fileKey
+    };
+    s3.deleteObject(s3Params, (err, data) => {
+      if (err) {
+        console.error("S3 파일 삭제 오류:", err);
+        // S3 삭제에 실패해도 계속 진행할지 결정(여기서는 로그만 남기고 계속 진행)
+      } else {
+        console.log("S3 파일 삭제 성공:", data);
+      }
+    });
+
+    // DB에서 견적 요청 삭제
     const deleted = await EstimateRequest.findByIdAndDelete(estimateId);
     if (!deleted) {
       return res.status(404).json({ success: false, message: "견적 요청을 찾을 수 없습니다." });
     }
-    res.json({ success: true, message: "견적 요청이 삭제되었습니다." });
+    res.json({ success: true, message: "견적 요청과 관련 파일이 삭제되었습니다." });
   } catch (err) {
     console.error("견적 요청 삭제 오류:", err);
     res.status(500).json({ success: false, message: "서버 오류 발생", error: err.message });
   }
 });
+
 
 module.exports = router;
