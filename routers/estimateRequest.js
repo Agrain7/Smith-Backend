@@ -10,17 +10,18 @@ const s3 = new AWS.S3();
 // POST /api/estimate-request : 견적 요청 데이터 저장
 router.post('/estimate-request', async (req, res) => {
   try {
-    const { username, name, phone, email, projectName, productType, fileUrl, fileName } = req.body;
-    if (!username || !name || !phone || !email || !projectName || !productType || !fileUrl || !fileName) {
-      return res.status(400).json({ success: false, message: '모든 필드를 입력해주세요.' });
+    // 이메일 필드를 완전히 제거하였으므로, 나머지 필드만 검증합니다.
+    const { username, name, phone, projectName, productType, fileUrl, fileName } = req.body;
+    if (!username || !name || !phone || !projectName || !productType || !fileUrl || !fileName) {
+      return res.status(400).json({ success: false, message: '필수 필드를 모두 입력해주세요.' });
     }
+
     const newEstimateRequest = new EstimateRequest({
       username,
       name,
       phone,
-      email,
       projectName,
-      productType,  // 추가된 필드
+      productType, 
       fileUrl,
       fileName
     });
