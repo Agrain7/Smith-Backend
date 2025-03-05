@@ -4,11 +4,10 @@ const router = express.Router();
 const EstimateRequest = require('../models/EstimateRequest');
 const AWS = require('aws-sdk');
 
-// AWS S3 설정 (이미 환경 변수로 설정되어 있다고 가정)
+// AWS S3 설정 (환경 변수로 이미 설정되어 있다고 가정)
 const s3 = new AWS.S3();
 
 // POST /api/estimate-request : 견적 요청 데이터 저장
-// 견적 요청을 처리하는 POST API (예시)
 router.post('/estimate-request', async (req, res) => {
   try {
     const { username, name, phone, projectName, productType, fileUrl, fileName } = req.body;
@@ -19,14 +18,13 @@ router.post('/estimate-request', async (req, res) => {
     // 같은 사용자의 동일 프로젝트 요청이 이미 있는지 확인
     let estimate = await EstimateRequest.findOne({ username, projectName });
     if (estimate) {
-      // 이미 제출된 경우, 업데이트 (예: 파일 제출 상태만 변경)
+      // 이미 제출된 경우, 파일 URL과 파일명을 업데이트하고, fileSubmitted 상태를 true로 변경
       estimate.fileUrl = fileUrl;
       estimate.fileName = fileName;
       estimate.fileSubmitted = true;
-      // 또는 estimate.estimateStatus = '제출완료';
       await estimate.save();
     } else {
-      // 새롭게 생성
+      // 새롭게 생성 (fileSubmitted 상태를 true로 설정)
       estimate = new EstimateRequest({
         username,
         name,
@@ -35,8 +33,7 @@ router.post('/estimate-request', async (req, res) => {
         productType,
         fileUrl,
         fileName,
-        fileSubmitted: true  // 제출 완료 상태
-        // 또는 estimateStatus: '제출완료'
+        fileSubmitted: true
       });
       await estimate.save();
     }
@@ -81,7 +78,7 @@ router.put('/estimate-request/:id/complete', async (req, res) => {
 router.delete('/estimate-request/:id', async (req, res) => {
   try {
     const estimateId = req.params.id;
-    // 삭제할 견적 요청을 조회합니다.
+    // 삭제할 견적 요청을 조회
     const estimate = await EstimateRequest.findById(estimateId);
     if (!estimate) {
       return res.status(404).json({ success: false, message: "견적 요청을 찾을 수 없습니다." });
@@ -89,17 +86,16 @@ router.delete('/estimate-request/:id', async (req, res) => {
 
     // S3에서 파일 삭제 처리
     const fileUrl = estimate.fileUrl;
-    // 파일 Key는 fileUrl의 마지막 부분(인코딩된 상태)입니다.
+    // 파일 Key는 fileUrl의 마지막 부분 (인코딩된 상태)입니다.
     const fileKey = fileUrl.split('/').pop();
     const s3Params = {
       Bucket: process.env.AWS_S3_BUCKET,
       Key: fileKey,
     };
 
-    // Promise를 사용하여 S3 파일 삭제. 실패해도 계속 진행합니다.
+    // S3 파일 삭제 (실패해도 로그만 남기고 계속 진행)
     await s3.deleteObject(s3Params).promise().catch(err => {
       console.error("S3 파일 삭제 오류:", err);
-      // S3 삭제 실패 시, 로그만 남기고 계속 진행
     });
 
     // DB에서 견적 요청 삭제
