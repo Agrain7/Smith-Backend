@@ -44,10 +44,14 @@ router.post('/estimate-request', async (req, res) => {
   }
 });
 
-// GET /api/estimate-request : 저장된 견적 요청 데이터 반환
+// GET /api/estimate-request : 저장된 견적 요청 데이터 반환 (쿼리 파라미터 지원)
 router.get('/estimate-request', async (req, res) => {
   try {
-    const estimates = await EstimateRequest.find({});
+    const { username, projectName } = req.query;
+    let query = {};
+    if (username) query.username = username;
+    if (projectName) query.projectName = projectName;
+    const estimates = await EstimateRequest.find(query);
     res.json({ success: true, estimates });
   } catch (err) {
     console.error("견적 요청 데이터 읽기 오류:", err);
@@ -78,7 +82,7 @@ router.put('/estimate-request/:id/complete', async (req, res) => {
 router.delete('/estimate-request/:id', async (req, res) => {
   try {
     const estimateId = req.params.id;
-    // 삭제할 견적 요청을 조회
+    // 삭제할 견적 요청 조회
     const estimate = await EstimateRequest.findById(estimateId);
     if (!estimate) {
       return res.status(404).json({ success: false, message: "견적 요청을 찾을 수 없습니다." });
@@ -86,14 +90,12 @@ router.delete('/estimate-request/:id', async (req, res) => {
 
     // S3에서 파일 삭제 처리
     const fileUrl = estimate.fileUrl;
-    // 파일 Key는 fileUrl의 마지막 부분 (인코딩된 상태)입니다.
     const fileKey = fileUrl.split('/').pop();
     const s3Params = {
       Bucket: process.env.AWS_S3_BUCKET,
       Key: fileKey,
     };
 
-    // S3 파일 삭제 (실패해도 로그만 남기고 계속 진행)
     await s3.deleteObject(s3Params).promise().catch(err => {
       console.error("S3 파일 삭제 오류:", err);
     });
