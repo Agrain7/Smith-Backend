@@ -17,20 +17,42 @@ const s3 = new AWS.S3();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+/**
+ * 프로젝트명을 안전한 파일명으로 변환하는 함수
+ * - 앞뒤 공백 제거 후, 내부 공백은 밑줄(_)로 변환
+ * - 영문, 숫자, 한글, 밑줄(_), 대시(-)만 허용
+ * - 최대 길이는 50자로 제한
+ */
+function sanitizeFileName(name) {
+  if (!name) return 'default';
+  let sanitized = name.trim().replace(/\s+/g, '_').replace(/[^A-Za-z0-9_\-가-힣]/g, '');
+  if (sanitized.length > 50) {
+    sanitized = sanitized.substring(0, 50);
+  }
+  return sanitized;
+}
+
 // POST /api/upload-estimate : 파일 업로드 처리 (S3로 업로드)
 router.post('/upload-estimate', upload.single('estimateFile'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, message: '파일 업로드에 실패했습니다.' });
   }
 
-  // 파일명을 인코딩하여 안전하게 처리 (한글 등의 문자 문제 방지)
-  const safeFileName = encodeURIComponent(req.file.originalname);
+  // 요청 바디에서 사용자가 입력한 프로젝트명 가져오기 (없으면 'default' 사용)
+  const projectName = req.body.projectName || 'default';
+  // 프로젝트명을 안전한 파일명으로 치환
+  const safeProjectName = sanitizeFileName(projectName);
+
+  // 파일 확장자 추출
+  const ext = path.extname(req.file.originalname);
+
+  // 파일명을 타임스탬프와 치환된 프로젝트명으로 생성
+  const fileKey = `${Date.now()}-${safeProjectName}${ext}`;
 
   const params = {
     Bucket: process.env.AWS_S3_BUCKET,  // 예: 'smithappbucket'
-    Key: `${Date.now()}-${safeFileName}`, // 인코딩된 파일명 포함
+    Key: fileKey, // 안전하게 치환된 파일명 사용
     Body: req.file.buffer,
-    // ACL 옵션 제거 (버킷의 Block Public Access 정책에 따라)
     ContentType: req.file.mimetype,
   };
 
@@ -40,7 +62,8 @@ router.post('/upload-estimate', upload.single('estimateFile'), (req, res) => {
       return res.status(500).json({ success: false, message: '파일 업로드 실패', error: err.message });
     }
     console.log("파일 업로드 성공:", data);
-    res.json({ success: true, message: '파일 업로드 성공', fileUrl: data.Location, fileName: req.file.originalname });
+    // S3에 저장된 파일의 URL과 안전하게 생성된 파일명을 반환
+    res.json({ success: true, message: '파일 업로드 성공', fileUrl: data.Location, fileName: fileKey });
   });
 });
 
