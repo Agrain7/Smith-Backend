@@ -8,25 +8,38 @@ const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 
 // POST /api/estimate-request : 견적 요청 데이터 저장
+// 견적 요청을 처리하는 POST API (예시)
 router.post('/estimate-request', async (req, res) => {
   try {
-    // 이메일 필드를 완전히 제거하였으므로, 나머지 필드만 검증합니다.
     const { username, name, phone, projectName, productType, fileUrl, fileName } = req.body;
     if (!username || !name || !phone || !projectName || !productType || !fileUrl || !fileName) {
       return res.status(400).json({ success: false, message: '필수 필드를 모두 입력해주세요.' });
     }
-
-    const newEstimateRequest = new EstimateRequest({
-      username,
-      name,
-      phone,
-      projectName,
-      productType, 
-      fileUrl,
-      fileName
-    });
-    await newEstimateRequest.save();
-    console.log("견적 요청 데이터 저장됨:", newEstimateRequest);
+    
+    // 같은 사용자의 동일 프로젝트 요청이 이미 있는지 확인
+    let estimate = await EstimateRequest.findOne({ username, projectName });
+    if (estimate) {
+      // 이미 제출된 경우, 업데이트 (예: 파일 제출 상태만 변경)
+      estimate.fileUrl = fileUrl;
+      estimate.fileName = fileName;
+      estimate.fileSubmitted = true;
+      // 또는 estimate.estimateStatus = '제출완료';
+      await estimate.save();
+    } else {
+      // 새롭게 생성
+      estimate = new EstimateRequest({
+        username,
+        name,
+        phone,
+        projectName,
+        productType,
+        fileUrl,
+        fileName,
+        fileSubmitted: true  // 제출 완료 상태
+        // 또는 estimateStatus: '제출완료'
+      });
+      await estimate.save();
+    }
     res.json({ success: true, message: "견적 요청이 제출되었습니다." });
   } catch (err) {
     console.error("견적 요청 처리 오류:", err);

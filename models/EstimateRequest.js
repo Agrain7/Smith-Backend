@@ -9,6 +9,7 @@ const estimateRequestSchema = new mongoose.Schema({
   productType: { type: String, required: true }, // 부재종류 추가
   fileName: { type: String, required: true },
   fileUrl: { type: String, required: true },
+  fileSubmitted: { type: Boolean, default: false },
   completed: { type: Boolean, default: false }, // 추가된 필드
   createdAt: { type: Date, default: Date.now }
 });
