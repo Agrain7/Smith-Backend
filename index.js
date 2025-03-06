@@ -13,7 +13,7 @@ const path = require('path');
 const app = express();
 
 const corsOptions = {
-  origin: '*',
+  origin: 'https://smith-web.netlify.app',
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
