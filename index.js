@@ -12,9 +12,8 @@ const path = require('path');
 
 const app = express();
 
-// CORS 옵션 설정: 개발 중에는 http://localhost:5173, 배포 후에는 실제 프론트엔드 도메인으로 변경
 const corsOptions = {
-  origin: 'http://localhost:5173', // 허용할 프론트엔드 도메인
+  origin: 'https://smith-web.netlify.app/', // 허용할 프론트엔드 도메인
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true, // 필요 시 쿠키 등 자격 증명 허용
   optionsSuccessStatus: 204,

@@ -19,9 +19,8 @@ const priceConfigSchema = new mongoose.Schema({
     "12~50t": { type: Number, default: 1300 }
   },
   processingFee: {
-    현장용소부재: { type: Number, default: 199 },
-    공장용소부재: { type: Number, default: 188 },
-    브라켓: { type: Number, default: 177 }
+    "스플라이스 철판": { type: Number, default: 180 },
+    "일반 철판": { type: Number, default: 160 }
   }
 }, { timestamps: true });
 
