@@ -13,7 +13,7 @@ const path = require('path');
 const app = express();
 
 const corsOptions = {
-  origin: 'https://smith-web.netlify.app', // 허용할 프론트엔드 도메인 (슬래시 제거)
+  origin: '*',
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
