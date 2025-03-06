@@ -5,8 +5,9 @@ const mongoose = require('./db');
 const authRouter = require('./routers/auth');
 const usersRouter = require('./routers/users');
 const estimateRequestRouter = require('./routers/estimateRequest');
-const uploadRouter = require('./routers/upload');  // 추가된 라우터
-const priceConfigRouter = require('./routers/priceConfig'); // 추가된 라우터
+const uploadRouter = require('./routers/upload');  
+const priceConfigRouter = require('./routers/priceConfig'); 
+const ordersRouter = require('./routers/orders'); 
 const fs = require('fs');
 const path = require('path');
 
@@ -33,6 +34,7 @@ app.use('/api', usersRouter);
 app.use('/api', estimateRequestRouter);
 app.use('/api', uploadRouter);
 app.use('/api', priceConfigRouter);
+app.use('/api', ordersRouter);
 
 app.get('/', (req, res) => {
   res.send('Hello from Express backend with MongoDB!');
