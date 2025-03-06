@@ -13,13 +13,15 @@ const path = require('path');
 const app = express();
 
 const corsOptions = {
-  origin: 'https://smith-web.netlify.app/', // 허용할 프론트엔드 도메인
+  origin: 'https://smith-web.netlify.app', // 허용할 프론트엔드 도메인 (슬래시 제거)
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true, // 필요 시 쿠키 등 자격 증명 허용
+  credentials: true,
   optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // 모든 OPTIONS 요청에 대해 CORS 적용
+
 app.use(express.json());
 
 // 정적 파일 서비스: uploads 폴더를 외부에서 접근 가능하도록 설정
