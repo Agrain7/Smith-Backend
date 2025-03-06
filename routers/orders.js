@@ -35,4 +35,23 @@ router.post('/orders', async (req, res) => {
   }
 });
 
+// PUT /api/orders/:id/status : 주문 상태 업데이트
+router.put('/orders/:id/status', async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const { status } = req.body;
+    if (!status) {
+      return res.status(400).json({ success: false, message: '상태 값이 필요합니다.' });
+    }
+    const updatedOrder = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
+    if (!updatedOrder) {
+      return res.status(404).json({ success: false, message: '주문을 찾을 수 없습니다.' });
+    }
+    res.json({ success: true, order: updatedOrder });
+  } catch (err) {
+    console.error("주문 상태 업데이트 오류:", err);
+    res.status(500).json({ success: false, message: "서버 오류 발생", error: err.message });
+  }
+});
+
 module.exports = router;
