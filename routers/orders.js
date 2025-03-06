@@ -1,7 +1,7 @@
 // backend/routers/orders.js
 const express = require('express');
 const router = express.Router();
-const Order = require('../models/Order'); // 새로운 Order 모델 사용
+const Order = require('../models/Order');
 
 // GET /api/orders?username=사용자아이디
 router.get('/orders', async (req, res) => {
