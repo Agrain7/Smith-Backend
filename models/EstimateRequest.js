@@ -11,7 +11,8 @@ const estimateRequestSchema = new mongoose.Schema({
   fileUrl: { type: String, required: true },
   fileSubmitted: { type: Boolean, default: false },
   completed: { type: Boolean, default: false }, // 추가된 필드
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  isSent: { type: Boolean, default: false }     // 견적서가 전송되었는지 여부 (추가)
 });
 
 module.exports = mongoose.model('EstimateRequest', estimateRequestSchema);

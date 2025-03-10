@@ -78,6 +78,25 @@ router.put('/estimate-request/:id/complete', async (req, res) => {
   }
 });
 
+// PUT /api/estimate-request/:id/send : 견적서 전송 상태 업데이트
+router.put('/estimate-request/:id/send', async (req, res) => {
+  try {
+    const estimateId = req.params.id;
+    const updated = await EstimateRequest.findByIdAndUpdate(
+      estimateId,
+      { isSent: true }, // 견적서 전송 상태 변경
+      { new: true }
+    );
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "견적서를 제출할 수 없습니다." });
+    }
+    res.json({ success: true, message: "견적서가 전송되었습니다.", estimate: updated });
+  } catch (err) {
+    console.error("견적서 전송 상태 업데이트 오류:", err);
+    res.status(500).json({ success: false, message: "서버 오류 발생", error: err.message });
+  }
+});
+
 // DELETE /api/estimate-request/:id : 견적 요청 삭제 (DB와 S3 파일 모두 삭제)
 router.delete('/estimate-request/:id', async (req, res) => {
   try {

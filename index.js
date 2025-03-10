@@ -14,7 +14,7 @@ const path = require('path');
 const app = express();
 
 const corsOptions = {
-  origin: 'https://smith-web.netlify.app',
+  origin: ['http://localhost:5173', 'https://smith-web.netlify.app'], // 개발 & 배포 환경 모두 허용
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
