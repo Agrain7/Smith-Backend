@@ -19,6 +19,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,     // ✅ 이메일 중복 방지
+    sparse: true      // ✅ 기존 데이터에 email이 없는 경우에도 unique 인덱스 적용 가능하도록 함
+  },
   isAdmin: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 }, { timestamps: true });

@@ -46,9 +46,9 @@ router.post('/login', async (req, res) => {
 // 회원가입 API (POST /api/signup)
 router.post('/signup', async (req, res) => {
   console.log('Signup 요청 받음');
-  const { username, password, name, phone } = req.body;
+  const { username, password, name, phone, email } = req.body;
 
-  if (!username || !password || !name || !phone) {
+  if (!username || !password || !name || !phone || !email) {
     return res.status(400).json({ message: '모든 필드를 입력해주세요.' });
   }
 
@@ -66,6 +66,7 @@ router.post('/signup', async (req, res) => {
       passwordHash,
       name,
       phone,
+      email 
     });
 
     await newUser.save();
