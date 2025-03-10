@@ -24,10 +24,6 @@ router.post('/login', async (req, res) => {
     }
     
     const isMatch = await bcrypt.compare(password, user.passwordHash);
-    
-    console.log("사용자 조회:", user);
-    console.log("비밀번호 비교 결과:", isMatch);
-
     if (!isMatch) {
       console.log('비밀번호 불일치');
       return res.status(401).json({ message: '아이디 또는 비밀번호가 올바르지 않습니다.' });
