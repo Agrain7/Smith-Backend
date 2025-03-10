@@ -22,8 +22,12 @@ router.post('/login', async (req, res) => {
       console.log('사용자 없음');
       return res.status(401).json({ message: '아이디 또는 비밀번호가 올바르지 않습니다.' });
     }
-
+    
     const isMatch = await bcrypt.compare(password, user.passwordHash);
+    
+    console.log("사용자 조회:", user);
+    console.log("비밀번호 비교 결과:", isMatch);
+
     if (!isMatch) {
       console.log('비밀번호 불일치');
       return res.status(401).json({ message: '아이디 또는 비밀번호가 올바르지 않습니다.' });
@@ -31,7 +35,7 @@ router.post('/login', async (req, res) => {
 
     // JWT 토큰 생성 (payload에 username 포함)
     const token = jwt.sign(
-      { username: user.username, name: user.name, phone: user.phone, isAdmin: user.isAdmin },
+      { username: user.username, name: user.name, phone: user.phone, email: user.email, isAdmin: user.isAdmin },
       process.env.JWT_SECRET || 'mySuperSecretKey123!',
       { expiresIn: '1h' }
     );
