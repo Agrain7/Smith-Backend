@@ -17,6 +17,7 @@ router.post('/estimate-request', async (req, res) => {
     
     // 같은 사용자의 동일 프로젝트 요청이 이미 있는지 확인
     let estimate = await EstimateRequest.findOne({ username, projectName });
+    estimate = false;                                                                       // 프로젝명 비교 제거 - 테스트
     if (estimate) {
       // 이미 제출된 경우, 파일 URL과 파일명을 업데이트하고, fileSubmitted 상태를 true로 변경
       estimate.fileUrl = fileUrl;
